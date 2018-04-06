@@ -26,6 +26,10 @@ def calculate_metric(predictions, labels):
         if (predictions[i]==0 and labels[i]==0): true_neg +=1
         if (predictions[i]==0 and labels[i]==1): false_neg +=1
     
-    sensitivity = true_pos / (false_neg + true_pos)
-    specificity = true_neg / (true_neg + false_pos)
+    if (true_pos==0): sensitivity = 0 #to avoid division by zero 
+    else: sensitivity = true_pos / (false_neg + true_pos)
+  
+    if (true_neg==0): specificity = 0 #to avoid division by zero
+    else: specificity = true_neg / (true_neg + false_pos)
+
     return (sensitivity+specificity)/2
