@@ -1,6 +1,7 @@
 import numpy as np
 import h5py
 import os
+from torch.utils.data import Dataset, DataLoader
 
 def save_large_dataset(file_name, variable):
     h5f = h5py.File(file_name + '.h5', 'w')
@@ -31,5 +32,36 @@ def calculate_metric(predictions, labels):
   
     if (true_neg==0): specificity = 0 #to avoid division by zero
     else: specificity = true_neg / (true_neg + false_pos)
-
+    
     return (sensitivity+specificity)/2
+
+
+class PAC2018Dataset(Dataset):
+    """PAC 2018 Competition dataset."""
+
+    def __init__(self, image_features, extra_features, labels):
+        self.image_features = image_features
+        self.extra_features = extra_features
+        self.labels = labels
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        sample = self.image_features[idx], self.extra_features[idx], self.labels[idx]
+        return sample
+    
+
+class DatasetTransforms(Dataset):
+    def __init__(self, images, labels, transform=None):
+        self.images = images
+        self.labels = labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):        
+        image = self.transform(self.images[idx])
+        sample = image, self.labels[idx]
+        return sample
